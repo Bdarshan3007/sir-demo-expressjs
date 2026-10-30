@@ -1,8 +1,18 @@
 const Todo = require('../models/usermodel');
 
+let nodemailer = require('nodemailer');
+
 const bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
 const saltRounds = 10;
+
+let transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'mimdarsh@gmail.com',
+    pass: 'typa bual gzxi fqbx'
+  }
+});
 
 const createTodo = async (req, res) => {
   // console.log("Create Todo function called");
@@ -36,7 +46,28 @@ const createTodo = async (req, res) => {
 };
 
 const loginTodo = async (req, res) => {
+
+const randomNumber = Math.floor(Math.random() * 9000) + 1000;
+
+  let mailOptions = {
+    from: 'mimdarsh@gmail.com',
+    to: 'cdmi@yopmail.com',
+    subject: 'Sending Email using Node.js',
+    text: 'The random number is: ' + randomNumber
+  };
+
+  console.log("loginTodo function called",mailOptions);
+
   try {
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+
     const { username, password } = req.body;
 
 
@@ -60,7 +91,7 @@ const loginTodo = async (req, res) => {
       });
     }
 
-    var token = jwt.sign({ username: username }, 'cdmin', { expiresIn: '30s' });
+    var token = jwt.sign({ username: username }, 'cdmin', { expiresIn: '300s' });
 
     res.status(200).json({
       success: true,
